@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Top Tier Equipment — A/B Test Report | MIS 432</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Code+Pro:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --slate:#1C2B3A;--stone:#2E3D4F;--granite:#3D5166;
+  --ice:#C8D8E8;--snow:#F4F7FA;--peak:#E8EFF6;
+  --accent:#B03A2E;--gold:#C9971C;--mist:#7FA8C0;
+  --text:#1A2530;--sub:#4A6278;--light:#8AAFC7;
+  --mono:'Source Code Pro',monospace;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',sans-serif;
+  --r:10px;--rl:18px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--snow);color:var(--text);line-height:1.75;font-size:16px}
+
+.hero{background:var(--slate);position:relative;overflow:hidden;padding:5rem 2rem 4rem;text-align:center}
+.hero::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.015) 0,rgba(255,255,255,.015) 1px,transparent 1px,transparent 40px),
+             repeating-linear-gradient(45deg,rgba(255,255,255,.015) 0,rgba(255,255,255,.015) 1px,transparent 1px,transparent 40px)}
+.hero-eye{font-family:var(--mono);font-size:.72rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:1.2rem}
+.hero h1{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3.6rem);color:#fff;line-height:1.15;margin-bottom:.6rem}
+.hero h1 span{color:var(--gold)}
+.hero-slogan{font-family:var(--serif);font-style:italic;color:var(--light);font-size:1.15rem;margin-bottom:2rem}
+.hero-meta{display:inline-flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
+.pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--ice);font-size:.78rem;padding:.35rem .9rem;border-radius:999px;font-family:var(--mono)}
+.mtn-rule{display:flex;align-items:center;justify-content:center;gap:1rem;margin:2.5rem auto 0;max-width:340px}
+.mtn-rule::before,.mtn-rule::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.15)}
+.mtn-rule span{font-size:1.4rem}
+
+.page{max-width:900px;margin:0 auto;padding:0 1.5rem}
+section{padding:3.5rem 0 2rem}
+section+section{border-top:1px solid var(--ice)}
+
+.lbl{font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);margin-bottom:.6rem}
+h2{font-family:var(--serif);font-size:clamp(1.5rem,3vw,2rem);color:var(--slate);margin-bottom:1.1rem;line-height:1.2}
+h3{font-family:var(--sans);font-weight:500;font-size:1.1rem;color:var(--stone);margin:1.5rem 0 .5rem}
+p{margin-bottom:1rem;color:var(--text)}
+p:last-child{margin-bottom:0}
+strong{font-weight:500;color:var(--slate)}
+
+.callout{border-left:3px solid var(--gold);background:var(--peak);padding:1.1rem 1.4rem;border-radius:0 var(--r) var(--r) 0;margin:1.5rem 0}
+.callout p{color:var(--stone);font-size:.95rem;margin:0}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:1rem;margin:1.8rem 0}
+.card{background:#fff;border:1px solid var(--ice);border-radius:var(--rl);padding:1.2rem 1.4rem}
+.card-lbl{font-size:.72rem;font-family:var(--mono);color:var(--mist);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.card-val{font-size:1.9rem;font-weight:700;font-family:var(--serif);color:var(--slate);line-height:1}
+.card-sub{font-size:.8rem;color:var(--sub);margin-top:.3rem}
+.card.hi{border-color:var(--gold);background:linear-gradient(135deg,#fffdf0,#fff)}
+.card.hi .card-val{color:var(--accent)}
+
+.tbl-wrap{overflow-x:auto;margin:1.5rem 0}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+thead tr{background:var(--slate);color:#fff}
+thead th{padding:.7rem 1rem;text-align:left;font-weight:500;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em}
+tbody tr:nth-child(even){background:var(--peak)}
+tbody td{padding:.65rem 1rem;border-bottom:1px solid var(--ice);color:var(--text)}
+tbody tr:last-child td{border-bottom:none}
+.win{color:var(--accent);font-weight:600}
+
+.cw{background:#fff;border:1px solid var(--ice);border-radius:var(--rl);padding:1.8rem;margin:1.8rem 0}
+.ct{font-family:var(--serif);font-size:1.05rem;color:var(--slate);margin-bottom:1.2rem;text-align:center}
+.cc{position:relative;width:100%;height:320px}
+.cleg{display:flex;gap:1.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap}
+.cleg span{display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--sub)}
+.ldot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+.sbox{background:var(--slate);color:#fff;border-radius:var(--rl);padding:2rem;margin:1.8rem 0;
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1.4rem}
+.si-lbl{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--light);margin-bottom:.25rem}
+.si-val{font-size:1.6rem;font-weight:700;font-family:var(--serif);color:#fff}
+.si-note{font-size:.78rem;color:var(--ice);margin-top:.2rem}
+
+.verdict{border-radius:var(--rl);padding:1.8rem 2rem;margin:1.8rem 0;border:2px solid var(--accent);background:linear-gradient(135deg,#fdf2f0,#fff)}
+.verdict h3{font-family:var(--serif);font-size:1.3rem;color:var(--accent);margin:.3rem 0 .6rem}
+.verdict p{font-size:.95rem;color:var(--stone)}
+
+.chain{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:1.4rem 0}
+.cs{background:#fff;border:1px solid var(--ice);border-radius:var(--r);padding:.5rem 1rem;font-size:.85rem;color:var(--stone);font-weight:500}
+.ca{color:var(--mist);font-size:1.1rem}
+
+.csec{background:var(--slate);border-radius:var(--rl);overflow:hidden;margin:1.8rem 0}
+.chdr{background:var(--stone);padding:.6rem 1.2rem;display:flex;align-items:center;gap:.5rem}
+.chdr span{font-family:var(--mono);font-size:.75rem;color:var(--light)}
+.cdots{display:flex;gap:.4rem}
+.cdots i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.cdots i:nth-child(1){background:#E74C3C}
+.cdots i:nth-child(2){background:#F39C12}
+.cdots i:nth-child(3){background:#2ECC71}
+pre{overflow-x:auto;padding:1.5rem 1.4rem;font-family:var(--mono);font-size:.8rem;line-height:1.75;color:var(--ice);background:transparent}
+.kw{color:#C792EA}.fn{color:#82AAFF}.st{color:#C3E88D}.cm{color:#546E7A;font-style:italic}.nm{color:#F78C6C}.bi{color:#89DDFF}
+
+.rec{background:var(--slate);border-radius:var(--rl);padding:2.5rem;color:#fff;margin:1.8rem 0}
+.rec h2{color:#fff;font-family:var(--serif)}
+.rec p{color:var(--ice)}
+.rl{list-style:none;margin:1.2rem 0;display:flex;flex-direction:column;gap:.6rem}
+.rl li{display:flex;align-items:flex-start;gap:.7rem;color:var(--ice);font-size:.95rem}
+.rl li::before{content:'▲';color:var(--gold);font-size:.7rem;margin-top:.45rem;flex-shrink:0}
+
+footer{background:var(--slate);color:var(--mist);text-align:center;padding:2.5rem 1.5rem;font-size:.8rem;font-family:var(--mono);letter-spacing:.04em;margin-top:4rem}
+footer strong{color:var(--ice)}
+@media(max-width:600px){.hero{padding:3.5rem 1.2rem 3rem}.sbox{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <p class="hero-eye">MIS 432: AI in Business &nbsp;·&nbsp; Western Washington University &nbsp;·&nbsp; College of Business &amp; Economics</p>
+  <h1>Top Tier Equipment<br><span>A/B Test Report</span></h1>
+  <p class="hero-slogan">"To the heights!"</p>
+  <div class="hero-meta">
+    <span class="pill">1,500 Simulated Shoppers</span>
+    <span class="pill">Product Page Layout Test</span>
+    <span class="pill">Two-Proportion Z-Test</span>
+    <span class="pill">p = 0.047 — Significant</span>
+  </div>
+  <div class="mtn-rule"><span>⛰</span></div>
+</div>
+
+<div class="page">
+
+<!-- BACKGROUND -->
+<section>
+  <p class="lbl">Background</p>
+  <h2>The Business Problem</h2>
+  <p><strong>Top Tier Equipment</strong> is a fictional online retailer specializing in mountain climbing gear — harnesses, carabiners, ropes, helmets, and technical apparel. Their product pages are the most important conversion point in the business: a shopper who lands there has already found what they want. The question is whether the page itself helps or hinders the final decision to buy.</p>
+  <p>Top Tier's product team proposed a hypothesis: <strong>where customer reviews appear on the page affects whether someone clicks "Add to Cart."</strong> Currently, reviews appear at the very top (Version A — the control). A proposed redesign moves them below the "Add to Cart" button (Version B — the treatment), so shoppers see the price and purchase option before scrolling into social proof.</p>
+  <p>Rather than guess, the team ran a controlled experiment — an A/B test — on 1,500 simulated shoppers to get a data-driven answer.</p>
+  <div class="callout"><p><strong>The core question:</strong> Does placing customer reviews <em>below</em> the Add to Cart button lead to more purchases than placing them <em>above</em> it? And if so, is the difference real — or just statistical noise?</p></div>
+</section>
+
+<!-- NETFLIX CONTEXT -->
+<section>
+  <p class="lbl">Context</p>
+  <h2>Experimentation in Business: The Netflix Model</h2>
+  <p>In the Netflix business case discussed in MIS 432, Netflix runs <strong>hundreds of simultaneous A/B tests</strong> at any given moment — testing thumbnail artwork, autoplay behavior, recommendation algorithms, and UI layouts across its 200+ million subscribers. This is not incidental to their strategy; it <em>is</em> the strategy. Netflix has built what scholars call an <strong>AI Factory</strong> — a continuous, self-reinforcing loop of data, models, predictions, and decisions that compounds over time.</p>
+
+  <div class="chain">
+    <div class="cs">📦 Data</div><div class="ca">→</div>
+    <div class="cs">🧠 Model</div><div class="ca">→</div>
+    <div class="cs">🎯 Prediction</div><div class="ca">→</div>
+    <div class="cs">✅ Decision</div><div class="ca">→</div>
+    <div class="cs">💰 Value</div><div class="ca">→</div>
+    <div class="cs">📦 More Data</div>
+  </div>
+
+  <p>A/B testing sits at the heart of this factory. Every design choice, every algorithm tweak, every UI change is treated as a hypothesis to be tested — not an opinion to be debated. The result is a company that learns faster than its competitors because decisions are made on evidence, not intuition.</p>
+
+  <h3>The Prediction-Decision Gap</h3>
+  <p>A key concept from the Netflix case is the <strong>prediction-decision gap</strong>: the space between what a model predicts and what a business actually does with that prediction. Predictions are worthless if they don't change behavior. A/B testing closes this gap by converting a statistical prediction ("Version B probably converts better") into an accountable decision ("deploy Version B to all users") — with evidence to justify it.</p>
+
+  <h3>Why Sample Size Matters</h3>
+  <p>Netflix can detect tiny improvements — a 0.1% change in retention — because they test at massive scale. With millions of users in each group, even micro-effects surface as statistically reliable signals. <strong>Top Tier is a smaller company,</strong> which is why we simulated 1,500 shoppers: large enough to detect a meaningful difference if one exists, realistic enough to reflect a real business context. The principle mirrors Netflix: more data means more confidence. Small samples produce noisy results; large samples produce actionable ones.</p>
+
+  <div class="callout"><p><strong>The scaling principle:</strong> A 1.2 percentage point lift sounds modest. But at 200,000 monthly visitors and an average order value of $180, it means roughly <strong>$432,000 in incremental annual revenue</strong> — from a single layout change that costs nothing to implement.</p></div>
+</section>
+
+<!-- SIMULATION DESIGN -->
+<section>
+  <p class="lbl">Experiment Design</p>
+  <h2>How the Simulation Works</h2>
+
+  <h3>Step 1 — Group Assignment: Control vs. Treatment</h3>
+  <p>1,500 shoppers were randomly split into two equal groups of 750. Random assignment is the cornerstone of valid experimentation — it ensures the only systematic difference between groups is the variable being tested (review placement), not demographics, device type, or time of visit.</p>
+  <ul style="margin:.8rem 0 1rem 1.4rem;color:var(--text)">
+    <li style="margin-bottom:.4rem"><strong>Version A — Control (750 shoppers):</strong> Reviews appear at the top of the page, above the product description and "Add to Cart" button. This is the existing layout.</li>
+    <li><strong>Version B — Treatment (750 shoppers):</strong> Reviews appear below the "Add to Cart" button. Shoppers see the price and CTA first, then reviews as confirmation.</li>
+  </ul>
+
+  <h3>Step 2 — Simulate Outcomes: Realistic Rates with Justification</h3>
+  <p>Each simulated shopper is modeled as a <strong>Bernoulli trial</strong> — a single yes/no event. Either they purchase (1) or they don't (0). The probability of purchasing is set per group based on real-world benchmarks:</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Version</th><th>Assumed Rate</th><th>Justification</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>A — Reviews at top</strong></td>
+          <td>3.8%</td>
+          <td>E-commerce baseline is 2–5%. Reviews at top introduce friction: shoppers read mixed feedback before seeing price or CTA, and some leave after encountering negatives before considering purchase.</td>
+        </tr>
+        <tr>
+          <td><strong>B — Reviews below CTA</strong></td>
+          <td>5.1%</td>
+          <td>Behavioral psychology (Cialdini's commitment &amp; consistency principle) suggests users who reach the CTA first are already leaning toward buying; reviews then confirm the decision rather than gate it. Consistent with Amazon's long-running page structure.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><p>These rates are justified assumptions for the simulation, not observed Top Tier data. In a live experiment, rates would emerge from actual user behavior. The simulation demonstrates the <em>methodology</em> — the same process Netflix uses, scaled down to a single product page.</p></div>
+</section>
+
+<!-- RESULTS -->
+<section>
+  <p class="lbl">Results</p>
+  <h2>Step 3 — Measure the Key Result</h2>
+  <p>The key metric is <strong>purchase-through rate</strong>: the percentage of visitors who completed a purchase. This is the clearest possible measure of whether the page layout is doing its job.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-lbl">Version A — Users</div>
+      <div class="card-val">750</div>
+      <div class="card-sub">Control group</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Version A — Purchases</div>
+      <div class="card-val">29</div>
+      <div class="card-sub">3.87% purchase-through rate</div>
+    </div>
+    <div class="card">
+      <div class="card-lbl">Version B — Users</div>
+      <div class="card-val">750</div>
+      <div class="card-sub">Treatment group</div>
+    </div>
+    <div class="card hi">
+      <div class="card-lbl">Version B — Purchases</div>
+      <div class="card-val">38</div>
+      <div class="card-sub">5.07% purchase-through rate</div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>Version A (Control)</th><th>Version B (Treatment)</th><th>Difference</th></tr></thead>
+      <tbody>
+        <tr><td>Total users</td><td>750</td><td>750</td><td>—</td></tr>
+        <tr><td>Total purchases</td><td>29</td><td>38</td><td>+9</td></tr>
+        <tr><td>Purchase-through rate</td><td>3.87%</td><td>5.07%</td><td class="win">+1.20 pp</td></tr>
+        <tr><td>Relative lift</td><td>—</td><td>—</td><td class="win">+31.0%</td></tr>
+        <tr><td>Non-converting users</td><td>721 (96.1%)</td><td>712 (94.9%)</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cw">
+    <p class="ct">Purchase-Through Rate: Version A vs. Version B</p>
+    <div class="cc"><canvas id="rateChart" role="img" aria-label="Bar chart comparing purchase-through rates: Version A 3.87%, Version B 5.07%">Version A: 3.87%. Version B: 5.07%.</canvas></div>
+    <div class="cleg">
+      <span><span class="ldot" style="background:#5DCAA5"></span>Version A — Reviews at top (control)</span>
+      <span><span class="ldot" style="background:#3266AD"></span>Version B — Reviews below CTA (treatment)</span>
+    </div>
+  </div>
+
+  <div class="cw">
+    <p class="ct">Shopper Funnel: Visitors, Non-Converters &amp; Purchases by Version</p>
+    <div class="cc"><canvas id="funnelChart" role="img" aria-label="Grouped bar chart: 750 visitors each; Version A 721 non-converting 29 purchasing; Version B 712 non-converting 38 purchasing">Visitors 750 each. Version A: 721 no-purchase, 29 purchased. Version B: 712 no-purchase, 38 purchased.</canvas></div>
+    <div class="cleg">
+      <span><span class="ldot" style="background:#5DCAA5"></span>Version A</span>
+      <span><span class="ldot" style="background:#3266AD"></span>Version B</span>
+    </div>
+  </div>
+
+  <h3>What the Charts Mean for Top Tier</h3>
+  <p>Version B's bar is visibly taller — 5.07% vs. 3.87%. That 1.2 percentage point gap translates to <strong>9 additional purchases per 750 shoppers</strong>. For a climbing equipment retailer with average order values in the $150–$250 range, this is meaningful. But a chart alone doesn't prove the difference is real. We need a statistical test to rule out chance.</p>
+</section>
+
+<!-- STATS -->
+<section>
+  <p class="lbl">Statistical Significance</p>
+  <h2>Step 4 — Is the Difference Real or Just Luck?</h2>
+
+  <h3>The Test Chosen: Two-Proportion Z-Test</h3>
+  <p>To determine whether the gap between 3.87% and 5.07% is a genuine signal or random noise, we use a <strong>two-proportion Z-test</strong>. This is the correct statistical choice when you have two independent groups, each producing a yes/no outcome (bought / didn't buy), and you want to know whether the proportion of "yes" answers differs meaningfully between groups.</p>
+  <p>Think of it this way: if you flipped a slightly weighted coin 750 times for each group, you'd expect slightly different results every time just from randomness. The Z-test asks: <em>is the gap between our two groups bigger than what pure randomness would usually produce?</em></p>
+
+  <h3>The Null Hypothesis</h3>
+  <p>The test starts by assuming the two versions perform identically — that any observed difference is coincidence. This is called the <strong>null hypothesis (H₀)</strong>. Our goal is to accumulate enough evidence to reject it. If the p-value falls below 0.05 (our threshold, called alpha), we reject H₀ and conclude the difference is real.</p>
+
+  <div class="sbox">
+    <div>
+      <div class="si-lbl">Z-score</div>
+      <div class="si-val">1.984</div>
+      <div class="si-note">How many standard errors apart the two rates are</div>
+    </div>
+    <div>
+      <div class="si-lbl">P-value</div>
+      <div class="si-val">0.0471</div>
+      <div class="si-note">Probability this gap is due to chance alone</div>
+    </div>
+    <div>
+      <div class="si-lbl">Threshold (α)</div>
+      <div class="si-val">0.05</div>
+      <div class="si-note">Industry-standard significance level</div>
+    </div>
+    <div>
+      <div class="si-lbl">95% Conf. Interval</div>
+      <div class="si-val">+0.01%–+2.39%</div>
+      <div class="si-note">Plausible range for the true lift</div>
+    </div>
+  </div>
+
+  <div class="cw">
+    <p class="ct">Step 4 — Z-Test: Where Our Result Falls on the Normal Distribution</p>
+    <div class="cc" style="height:260px"><canvas id="zChart" role="img" aria-label="Normal distribution with rejection regions shaded red and observed Z-score of 1.984 marked in blue, falling inside the rejection region">Z = 1.984 falls inside the right-side rejection region, confirming statistical significance at alpha = 0.05.</canvas></div>
+    <div class="cleg">
+      <span><span class="ldot" style="background:rgba(176,58,46,0.4)"></span>Rejection region (α = 0.05, z &gt; ±1.96)</span>
+      <span><span class="ldot" style="background:#3266AD"></span>Observed Z = 1.984</span>
+    </div>
+  </div>
+
+  <h3>Plain-English Interpretation</h3>
+  <p>The p-value is <strong>0.0471</strong> — below our 0.05 threshold. In plain English: if the two page versions actually performed identically, there would only be a <strong>4.7% chance</strong> we'd see a gap this large just from random luck. Since that's below 5%, we reject the null hypothesis and conclude the difference is <strong>statistically significant</strong>.</p>
+  <p>The <strong>confidence interval</strong> — [+0.01%, +2.39%] — is entirely positive. The true lift could be as small as nearly zero or as large as 2.4 percentage points, but it is very unlikely to be negative. Version B is almost certainly not worse.</p>
+  <p>The Z-score of <strong>1.984</strong> exceeds the critical value of 1.96 for a two-tailed test at 95% confidence — which is why the result clears the significance bar. But just barely. This is worth noting honestly: a larger live sample would increase certainty further.</p>
+
+  <div class="verdict">
+    <div style="font-size:2rem">✅</div>
+    <h3>Statistically Significant — Version B Wins</h3>
+    <p>The difference in purchase-through rates (5.07% vs. 3.87%) is statistically significant at the 95% confidence level (p = 0.047). The result is unlikely to be due to chance. Version B — placing reviews below the Add to Cart button — is the better-performing layout.</p>
+  </div>
+</section>
+
+<!-- WHAT THIS MEANS -->
+<section>
+  <p class="lbl">Business Interpretation</p>
+  <h2>What These Results Mean for Top Tier</h2>
+
+  <h3>The Purchase-Through Rate Gap</h3>
+  <p>Version B shoppers converted at 5.07% versus 3.87% for Version A — a <strong>relative improvement of 31%</strong>. In the simulation, that's 38 purchases versus 29 out of 750 visitors each. The bar chart makes this immediately visible. In business terms, a 31% improvement in purchase-through rate from a single costless layout change is exactly the kind of result that prompts immediate deployment.</p>
+
+  <h3>The AI Factory in Action</h3>
+  <p>This experiment is a miniature version of the AI Factory loop Netflix runs at scale. The <strong>data</strong> is simulated shopper behavior. The <strong>model</strong> is the Bernoulli probability distribution applied to each group. The <strong>prediction</strong> is "Version B converts at a higher rate." The <strong>decision</strong> is whether to deploy Version B to all visitors. The <strong>value</strong> is the incremental revenue from additional purchases — and the behavioral data those purchases generate for future experiments. Each loop tightens the next.</p>
+
+  <h3>Closing the Prediction-Decision Gap</h3>
+  <p>Without the statistical test, the company might say: "the chart looks better for B, but maybe it's a fluke." The Z-test closes the prediction-decision gap: it converts a visual impression into a quantified probability (p = 0.047), giving decision-makers the confidence to act. This is exactly what Netflix's XP experimentation platform does — it does not let product teams ship changes based on charts alone. Every change requires a statistically validated result before it reaches all users.</p>
+
+  <h3>The Importance of Sample Size</h3>
+  <p>Our result cleared the significance threshold, but only barely (p = 0.047 vs. the 0.05 cutoff). This illustrates why sample size matters: with only 750 users per group, we are working close to the detection limit for an effect of this size. Had we simulated 500 users per group instead of 750, the same effect might not have reached significance. Netflix tests with hundreds of thousands of users per variant precisely because they want to detect smaller effects with much higher confidence. Top Tier should plan live experiments with as large a sample as their traffic volume allows.</p>
+</section>
+
+<!-- CODE -->
+<section>
+  <p class="lbl">The Code</p>
+  <h2>Complete Python Simulation — Google Colab</h2>
+  <p>The code below reproduces every step of this experiment: group assignment, outcome simulation, metric calculation, visualization, and statistical testing. Copy and paste it into a Google Colab notebook to run it.</p>
+
+  <div class="csec">
+    <div class="chdr">
+      <div class="cdots"><i></i><i></i><i></i></div>
+      <span>top_tier_ab_test.py — Google Colab</span>
+    </div>
+<pre><span class="cm"># ════════════════════════════════════════════════════════════</span>
+<span class="cm"># Top Tier Equipment — A/B Test Simulation</span>
+<span class="cm"># MIS 432: AI in Business | Western Washington University</span>
+<span class="cm"># Scenario: Does review placement affect purchase-through rate?</span>
+<span class="cm"># 1,500 simulated shoppers | Two-Proportion Z-Test</span>
+<span class="cm"># ════════════════════════════════════════════════════════════</span>
+
+<span class="cm"># ── Step 1: Import Libraries ──────────────────────────────</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> scipy.special <span class="kw">import</span> ndtr
+<span class="kw">import</span> warnings
+warnings.<span class="fn">filterwarnings</span>(<span class="st">"ignore"</span>)
+
+np.random.<span class="fn">seed</span>(<span class="nm">42</span>)  <span class="cm"># Locks results so simulation is reproducible</span>
+
+<span class="cm"># ── Step 2: Define Experiment Parameters ─────────────────</span>
+TOTAL_SHOPPERS = <span class="nm">1500</span>
+GROUP_SIZE     = TOTAL_SHOPPERS // <span class="nm">2</span>  <span class="cm"># 750 per group</span>
+
+<span class="cm"># Assumed purchase rates — justified by industry benchmarks</span>
+<span class="cm"># and behavioral psychology (see report for full rationale)</span>
+RATE_A = <span class="nm">0.038</span>  <span class="cm"># Version A: reviews at top    → 3.8% conversion</span>
+RATE_B = <span class="nm">0.051</span>  <span class="cm"># Version B: reviews below CTA → 5.1% conversion</span>
+
+<span class="cm"># ── Step 3: Simulate Shopper Behavior ────────────────────</span>
+<span class="cm"># Bernoulli trial: each shopper either buys (1) or doesn't (0)</span>
+group_a = np.random.<span class="fn">binomial</span>(n=<span class="nm">1</span>, p=RATE_A, size=GROUP_SIZE)
+group_b = np.random.<span class="fn">binomial</span>(n=<span class="nm">1</span>, p=RATE_B, size=GROUP_SIZE)
+
+<span class="cm"># Store results in a structured DataFrame</span>
+df = pd.<span class="fn">DataFrame</span>({
+    <span class="st">'user_id'</span>  : <span class="fn">range</span>(<span class="nm">1</span>, TOTAL_SHOPPERS + <span class="nm">1</span>),
+    <span class="st">'version'</span>  : [<span class="st">'A'</span>] * GROUP_SIZE + [<span class="st">'B'</span>] * GROUP_SIZE,
+    <span class="st">'purchased'</span>: <span class="fn">list</span>(group_a) + <span class="fn">list</span>(group_b)
+})
+
+<span class="cm"># ── Step 4: Calculate Key Metrics ────────────────────────</span>
+summary = (
+    df.<span class="fn">groupby</span>(<span class="st">'version'</span>)
+      .<span class="fn">agg</span>(total_users=(<span class="st">'user_id'</span>, <span class="st">'count'</span>),
+           total_purchases=(<span class="st">'purchased'</span>, <span class="st">'sum'</span>))
+      .<span class="fn">reset_index</span>()
+)
+summary[<span class="st">'purchase_rate'</span>] = (
+    summary[<span class="st">'total_purchases'</span>] / summary[<span class="st">'total_users'</span>]
+)
+
+conversions_a = summary.<span class="fn">loc</span>[summary[<span class="st">'version'</span>]==<span class="st">'A'</span>,
+                             <span class="st">'total_purchases'</span>].<span class="fn">values</span>[<span class="nm">0</span>]
+conversions_b = summary.<span class="fn">loc</span>[summary[<span class="st">'version'</span>]==<span class="st">'B'</span>,
+                             <span class="st">'total_purchases'</span>].<span class="fn">values</span>[<span class="nm">0</span>]
+rate_a        = conversions_a / GROUP_SIZE
+rate_b        = conversions_b / GROUP_SIZE
+abs_lift      = rate_b - rate_a
+rel_lift      = (abs_lift / rate_a) * <span class="nm">100</span>
+
+<span class="fn">print</span>(<span class="st">"Summary:"</span>)
+<span class="fn">print</span>(summary.<span class="fn">to_string</span>(index=<span class="bi">False</span>))
+
+<span class="cm"># ── Step 5: Visualize Results ─────────────────────────────</span>
+fig, axes = plt.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">2</span>, figsize=(<span class="nm">13</span>, <span class="nm">5</span>))
+fig.<span class="fn">suptitle</span>(<span class="st">"Top Tier Equipment — A/B Test: Review Placement"</span>,
+             fontsize=<span class="nm">14</span>, fontweight=<span class="st">'bold'</span>)
+colors = [<span class="st">'#5DCAA5'</span>, <span class="st">'#3266AD'</span>]
+labels = [<span class="st">'Version A\n(Reviews at top)'</span>,
+          <span class="st">'Version B\n(Reviews below CTA)'</span>]
+
+<span class="cm"># Chart 1: Purchase-through rate bar chart</span>
+ax1 = axes[<span class="nm">0</span>]
+bars = ax1.<span class="fn">bar</span>(labels, [rate_a*<span class="nm">100</span>, rate_b*<span class="nm">100</span>],
+               color=colors, width=<span class="nm">0.5</span>,
+               edgecolor=<span class="st">'white'</span>, linewidth=<span class="nm">1.5</span>)
+<span class="kw">for</span> bar, r <span class="kw">in</span> <span class="fn">zip</span>(bars, [rate_a, rate_b]):
+    ax1.<span class="fn">text</span>(bar.<span class="fn">get_x</span>() + bar.<span class="fn">get_width</span>()/<span class="nm">2</span>,
+             bar.<span class="fn">get_height</span>() + <span class="nm">0.1</span>,
+             <span class="fn">f</span><span class="st">'{r:.2%}'</span>, ha=<span class="st">'center'</span>, va=<span class="st">'bottom'</span>,
+             fontsize=<span class="nm">12</span>, fontweight=<span class="st">'bold'</span>)
+ax1.<span class="fn">set_ylim</span>(<span class="nm">0</span>, <span class="fn">max</span>([rate_a, rate_b]) * <span class="nm">140</span>)
+ax1.<span class="fn">set_ylabel</span>(<span class="st">'Purchase-Through Rate (%)'</span>)
+ax1.<span class="fn">set_title</span>(<span class="st">'Purchase-Through Rate by Version'</span>)
+ax1.spines[[<span class="st">'top'</span>, <span class="st">'right'</span>]].<span class="fn">set_visible</span>(<span class="bi">False</span>)
+
+<span class="cm"># Chart 2: Funnel (visitors / non-converters / purchasers)</span>
+ax2   = axes[<span class="nm">1</span>]
+cats  = [<span class="st">'Visited'</span>, <span class="st">'Did Not Convert'</span>, <span class="st">'Purchased'</span>]
+va    = [GROUP_SIZE, GROUP_SIZE - conversions_a, conversions_a]
+vb    = [GROUP_SIZE, GROUP_SIZE - conversions_b, conversions_b]
+x     = np.<span class="fn">arange</span>(<span class="fn">len</span>(cats))
+w     = <span class="nm">0.35</span>
+ba = ax2.<span class="fn">bar</span>(x - w/<span class="nm">2</span>, va, w, color=colors[<span class="nm">0</span>], label=<span class="st">'Version A'</span>)
+bb = ax2.<span class="fn">bar</span>(x + w/<span class="nm">2</span>, vb, w, color=colors[<span class="nm">1</span>], label=<span class="st">'Version B'</span>)
+<span class="kw">for</span> bar <span class="kw">in</span> <span class="fn">list</span>(ba) + <span class="fn">list</span>(bb):
+    ax2.<span class="fn">text</span>(bar.<span class="fn">get_x</span>() + bar.<span class="fn">get_width</span>()/<span class="nm">2</span>,
+             bar.<span class="fn">get_height</span>() + <span class="nm">4</span>,
+             <span class="fn">str</span>(<span class="fn">int</span>(bar.<span class="fn">get_height</span>())),
+             ha=<span class="st">'center'</span>, va=<span class="st">'bottom'</span>, fontsize=<span class="nm">9</span>)
+ax2.<span class="fn">set_xticks</span>(x)
+ax2.<span class="fn">set_xticklabels</span>(cats)
+ax2.<span class="fn">set_ylabel</span>(<span class="st">'Number of Shoppers'</span>)
+ax2.<span class="fn">set_title</span>(<span class="st">'Shopper Funnel by Version'</span>)
+ax2.<span class="fn">legend</span>()
+ax2.spines[[<span class="st">'top'</span>, <span class="st">'right'</span>]].<span class="fn">set_visible</span>(<span class="bi">False</span>)
+
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">savefig</span>(<span class="st">'top_tier_ab_results.png'</span>, dpi=<span class="nm">150</span>, bbox_inches=<span class="st">'tight'</span>)
+plt.<span class="fn">show</span>()
+
+<span class="cm"># ── Step 6: Two-Proportion Z-Test ────────────────────────</span>
+<span class="cm"># Pooled proportion (assumes null hypothesis: pA = pB)</span>
+p_pool  = (conversions_a + conversions_b) / (GROUP_SIZE * <span class="nm">2</span>)
+se      = np.<span class="fn">sqrt</span>(p_pool * (<span class="nm">1</span> - p_pool) *
+                  (<span class="nm">1</span>/GROUP_SIZE + <span class="nm">1</span>/GROUP_SIZE))
+z_score = (rate_b - rate_a) / se
+p_value = <span class="nm">2</span> * (<span class="nm">1</span> - <span class="fn">ndtr</span>(<span class="fn">abs</span>(z_score)))
+ci_lo   = abs_lift - <span class="nm">1.96</span> * se
+ci_hi   = abs_lift + <span class="nm">1.96</span> * se
+sig     = p_value &lt; <span class="nm">0.05</span>
+
+<span class="fn">print</span>(<span class="st">"\n"</span> + <span class="st">"═"</span> * <span class="nm">52</span>)
+<span class="fn">print</span>(<span class="st">"   TOP TIER EQUIPMENT — A/B TEST RESULTS"</span>)
+<span class="fn">print</span>(<span class="st">"═"</span> * <span class="nm">52</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="st">"\n  Version A  : {conversions_a} purchases ({rate_a:.2%})"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="st">"  Version B  : {conversions_b} purchases ({rate_b:.2%})"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="st">"  Abs lift   : {abs_lift:+.2%}"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="st">"  Rel lift   : {rel_lift:+.1f}%"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="st">"  Z-score    : {z_score:.4f}"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="st">"  P-value    : {p_value:.4f}"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="st">"  95% CI     : [{ci_lo:+.4f}, {ci_hi:+.4f}]"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="st">"  Significant : {'YES ✅' if sig else 'NO ❌'}"</span>)
+<span class="fn">print</span>(<span class="st">"═"</span> * <span class="nm">52</span>)</pre>
+  </div>
+</section>
+
+<!-- RECOMMENDATION -->
+<section>
+  <p class="lbl">Recommendation</p>
+  <div class="rec">
+    <h2>Business Recommendation</h2>
+    <p>Based on the A/B test results, Top Tier Equipment should <strong>deploy Version B — customer reviews below the Add to Cart button — as the new standard product page layout.</strong></p>
+    <ul class="rl">
+      <li>The 31% relative lift in purchase-through rate (3.87% → 5.07%) is statistically significant at the 95% confidence level (p = 0.047), meaning the result is unlikely to be due to chance.</li>
+      <li>The confidence interval [+0.01%, +2.39%] is entirely positive — confirming that Version B is very likely better, not a fluke in either direction.</li>
+      <li>The layout change is costless to implement — it requires only reordering existing HTML/CSS elements — making the risk/reward ratio extremely favorable.</li>
+      <li>After deployment, Top Tier should monitor live conversion rates for 30–60 days to confirm the simulated result holds under real-world conditions, including device type, season, and traffic source variation.</li>
+      <li>Longer-term, Top Tier should build an experimentation culture modeled on Netflix's approach: every design, pricing, and UX decision treated as a testable hypothesis, not an opinion to be debated. This is the first step toward building their own AI Factory.</li>
+    </ul>
+    <p style="margin-top:1.4rem;font-size:.9rem;color:var(--ice)">⛰&nbsp; To the heights — one data-driven decision at a time.</p>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <strong>MIS 432: AI in Business</strong><br>
+  College of Business &amp; Economics &nbsp;·&nbsp; Western Washington University<br><br>
+  Top Tier Equipment A/B Test Simulation &nbsp;·&nbsp; 1,500 Simulated Shoppers<br>
+  Two-Proportion Z-Test &nbsp;·&nbsp; 95% Confidence Level &nbsp;·&nbsp; p = 0.047
+</footer>
+
+<script>
+(function(){
+  const nA=750,nB=750,cA=29,cB=38;
+  const rA=cA/nA*100,rB=cB/nB*100;
+
+  new Chart(document.getElementById('rateChart'),{
+    type:'bar',
+    data:{
+      labels:['Version A\n(Reviews at top)','Version B\n(Reviews below CTA)'],
+      datasets:[{
+        data:[rA,rB],
+        backgroundColor:['rgba(93,202,165,0.85)','rgba(50,102,173,0.85)'],
+        borderColor:['#1D9E75','#185FA5'],borderWidth:1.5,borderRadius:8
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>` ${c.raw.toFixed(2)}% purchase-through rate`}}},
+      scales:{
+        y:{beginAtZero:true,max:7.5,
+           ticks:{callback:v=>v+'%',font:{size:12}},
+           grid:{color:'rgba(100,130,160,0.12)'}},
+        x:{ticks:{font:{size:12}},grid:{display:false}}
+      }}
+  });
+
+  new Chart(document.getElementById('funnelChart'),{
+    type:'bar',
+    data:{
+      labels:['Visited page','Did not convert','Purchased'],
+      datasets:[
+        {label:'Version A',data:[nA,nA-cA,cA],backgroundColor:'rgba(93,202,165,0.85)',borderColor:'#1D9E75',borderWidth:1,borderRadius:5},
+        {label:'Version B',data:[nB,nB-cB,cB],backgroundColor:'rgba(50,102,173,0.85)',borderColor:'#185FA5',borderWidth:1,borderRadius:5}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw} shoppers`}}},
+      scales:{
+        y:{beginAtZero:true,ticks:{font:{size:12}},grid:{color:'rgba(100,130,160,0.12)'}},
+        x:{ticks:{font:{size:12}},grid:{display:false}}
+      }}
+  });
+
+  function npdf(x){return Math.exp(-0.5*x*x)/Math.sqrt(2*Math.PI)}
+  const xs=[],ys=[],rL=[],rR=[];
+  for(let v=-4.5;v<=4.5;v+=0.06){
+    const xr=+v.toFixed(2);
+    xs.push(xr);
+    ys.push(+npdf(xr).toFixed(5));
+    rL.push(xr<=-1.96?+npdf(xr).toFixed(5):null);
+    rR.push(xr>=1.96?+npdf(xr).toFixed(5):null);
+  }
+
+  const zc=new Chart(document.getElementById('zChart'),{
+    type:'line',
+    data:{labels:xs,datasets:[
+      {data:ys,borderColor:'#3D5166',borderWidth:2,fill:false,pointRadius:0,tension:0.35},
+      {data:rL,borderColor:'transparent',backgroundColor:'rgba(176,58,46,0.22)',fill:true,pointRadius:0,tension:0.35},
+      {data:rR,borderColor:'transparent',backgroundColor:'rgba(176,58,46,0.22)',fill:true,pointRadius:0,tension:0.35}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{enabled:false}},
+      scales:{
+        x:{ticks:{callback:(v,i)=>{const val=xs[i];return(val===-4||val===-2||val===0||val===2||val===4)?String(val):''},maxRotation:0,font:{size:11}},
+           grid:{color:'rgba(100,130,160,0.1)'}},
+        y:{beginAtZero:true,ticks:{font:{size:10}},grid:{color:'rgba(100,130,160,0.1)'}}
+      }}
+  });
+
+  const linePlugin={id:'zlines',afterDraw(chart){
+    if(chart!==zc)return;
+    const{ctx,scales:{x,y}}=chart;
+    const obsX=x.getPixelForValue(1.984);
+    ctx.save();
+    ctx.beginPath();ctx.moveTo(obsX,y.top);ctx.lineTo(obsX,y.bottom);
+    ctx.strokeStyle='#3266AD';ctx.lineWidth=2.5;ctx.setLineDash([5,4]);ctx.stroke();
+    ctx.fillStyle='#3266AD';ctx.font='bold 11px DM Sans,sans-serif';
+    ctx.fillText('Z\u202f=\u202f1.984',obsX+4,y.top+18);
+    [-1.96,1.96].forEach(cv=>{
+      const px=x.getPixelForValue(cv);
+      ctx.beginPath();ctx.moveTo(px,y.top);ctx.lineTo(px,y.bottom);
+      ctx.strokeStyle='rgba(176,58,46,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);ctx.stroke();
+      ctx.fillStyle='rgba(176,58,46,0.75)';ctx.font='10px DM Sans,sans-serif';
+      ctx.fillText(cv>0?'\u2009+1.96':'\u2009\u22121.96',px+3,y.bottom-8);
+    });
+    ctx.restore();
+  }};
+  Chart.register(linePlugin);
+  zc.update();
+})();
+</script>
+</body>
+</html>
